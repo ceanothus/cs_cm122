@@ -41,6 +41,39 @@ def parse_reads_file(reads_fn):
 
 """
 
+class deBruijnGraph:
+	def __init__(self):
+		self.vertices = 0
+		self.edges = 0
+		self.k = 0
+		self.into = {}
+		self.outof ={}
+		self.graph = {}
+	
+	def deBruijnFromKmers(self, input_reads):
+		for paired_read in input_reads:
+			self.k = len(paired_read[0])
+			
+			k1Prefix = paired_read[0][0:k-1]			
+			k2Prefix = paired_read[1][0:k-1]
+			pairedPrefix = (k1Prefix, k2Prefix)
+			
+			k1Suffix = paired_read[0][1:k]
+			k2Suffix = paired_read[1][1:k]
+			pairedSuffix =  (k1Suffix, k2Suffix)
+			
+			self.graph.setdefault(pairedPrefix, []).append(pairedSuffix)
+			
+			self.into[pairedPrefix] = self.into.get(pairedPrefix, 0)
+			self.into[pairedSuffix] = self.into.get(pairedSuffix, 0) + 1
+			
+			self.outof[pairedPrefix] = self.outof.get(pairedPrefix, 0) + 1
+			self.outof[pairedSuffix] = self.outof.get(pairedSuffix, 0)
+			
+		
+			
+		
+	
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='basic_assembly.py takes in data for homework assignment 3 consisting '
@@ -66,9 +99,8 @@ if __name__ == "__main__":
     """
             TODO: Call functions to do the actual assembly here
 
-    """
-    print(input_reads)
-    contigs = ['GCTGACTAGCTAGCTACGATCGATCGATCGATCGATCGATGACTAGCTAGCTAGCGCTGACT']
+    """    
+    contigs = []
 
     output_fn = args.output_file
     zip_fn = output_fn + '.zip'
